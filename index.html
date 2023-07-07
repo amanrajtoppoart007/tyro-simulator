@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="iclientsimulator.test.tyro.com/iclient-with-ui-v1.js" type="text/javascript"></script>
+</head>
+<body>
+<script>
+  let apiKey = "8a28a6421856b38d22f46ad0b4721ab1"; // API Key not validated test environments
+let posProductInfo = {
+    posProductVendor: "Foodship",
+    posProductName: "Foodship POS",
+    posProductVersion: "1.0.7",
+    siteReference: "Bundoora"
+};
+  let iclient = new TYRO.IClientWithUI(apiKey,posProductInfo);
+
+  let receiptCallback = function (receipt) {
+  console.log('Merchant Receipt = ' + JSON.stringify(receipt));
+  const merchantReceipt = receipt.merchantReceipt;
+ console.log(merchantReceipt)
+};
+
+  let transactionCompleteCallback = function (response) {
+  console.log(response.customerReceipt);
+  if (response.result === 'APPROVED') {
+    let lastAmount = parseFloat(response.transactionAmount);
+
+    if (
+      response.tipAmount !== undefined &&
+      response.tipAmount !== '' &&
+      response.tipAmount !== 0
+    ) {
+      lastAmount = parseFloat(
+        parseFloat(response.transactionAmount) +
+          parseInt(response.tipAmount) / 100,
+      );
+    }
+    console.log('Customer Receipt = ' + JSON.stringify(response));
+    lastCReceipt = response.customerReceipt;
+   console.log(
+      'tyro',
+      response,
+      lastMReceipt,
+      lastCReceipt,
+    );
+    console.log(response.customerReceipt);
+    // window.helloComponent.saveReceipt(lastMReceipt);
+  } else {
+    console.log(response.customerReceipt);
+
+  }
+};
+
+  let transactionCompleteCallbackRefund = function (response) {
+  console.log(response);
+  if (response.result === 'APPROVED') {
+    lastCReceipt = response.customerReceipt;
+    console.log(response, lastCReceipt, lastMReceipt);
+    console.log(response.customerReceipt);
+  } else {
+       console.log(response.customerReceipt);
+  }
+};
+
+  function doRefund(amount) {
+  mer = 1;
+  try {
+    iclient.initiateRefund(
+      {
+        amount: amount.toFixed(0),
+        integratedReceipt: true,
+      },
+      {
+        receiptCallback: receiptCallback,
+        transactionCompleteCallback: transactionCompleteCallbackRefund,
+      },
+    );
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+
+function responseReceivedCallbackData(data)
+  {
+    console.log(data)
+  }
+
+function doSettlement() {
+  iclient.manualSettlement(responseReceivedCallbackData, {});
+}
+
+function doPurchase(amount) {
+  mer = 1;
+  try {
+    iclient.initiatePurchase(
+      {
+        amount: amount.toFixed(0),
+        cashout: '0',
+        integratedReceipt: true,
+        enableSurcharge: true,
+      },
+      {
+        receiptCallback: receiptCallback,
+        transactionCompleteCallback: transactionCompleteCallback,
+      },
+    );
+  } catch (e) {
+        console.log(e);
+  }
+}
+
+doPurchase(100);
+
+</script>
+</body>
+</html>
