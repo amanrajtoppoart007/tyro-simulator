@@ -145,14 +145,12 @@ document.addEventListener('message', function(message) {
 
     if(res.action==='init-purchase')
     {
-         try {
-            if(terminalStatus===1 && iclient!==null && iclient!==undefined)
+        if(terminalStatus===1 && iclient!==null && iclient!==undefined)
          {
              
                amount = String(res.data.amount).toString();
                cashout = String(res.data.cashout).toString();
-               iclient = new system[1].IClient(apiKey, posProductInfo);
-               iclient.initiatePurchase({amount: ramount, cashout:cashout, integratedReceipt: true}, {
+         const result =      iclient.initiatePurchase({amount: ramount, cashout:cashout, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
             const params = {
                 action:'merchant-receipt-success',
@@ -175,6 +173,8 @@ document.addEventListener('message', function(message) {
             sendResponse(params);
         }
     });
+
+    sendResponse(result);
          }
          else
          {
@@ -185,17 +185,6 @@ document.addEventListener('message', function(message) {
                     tid:tid,
                 },
                 message:'terminal not ready'
-            }
-            sendResponse(params);
-         }
-         } catch (error) {
-            const params = {
-                action:'error',
-                data: {
-                    apiKey: window.apiKey,
-                    amount:res.data.amount,
-                    cashout:res.data.cashout,
-                }
             }
             sendResponse(params);
          }
