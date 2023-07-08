@@ -335,6 +335,11 @@ document.addEventListener('message', function(message) {
   alert(JSON.stringify(message.data));
 })
 
+    function sendMessage()
+    {
+        window.postMessage("this is test from webview");
+    }
+
 function doGenerateReport() {
     var date = $("#date").val();
     var type = $("input:radio[name=type]:checked").val();
@@ -463,6 +468,7 @@ function formatResult(response) {
                         <li id="transactions"><a href="javascript:showTransactionsPage()">Transactions</a></li>
                         <li id="reporting"><a href="javascript:showReportingPage()">Reporting and Settlement</a></li>
                         <li id="configuration"><a href="javascript:showConfigurationPage()">Configuration</a></li>
+                         <li><a href="javascript:sendMessage()">Send Message</a></li>
                     </ul>
                 </div>
             </div>
