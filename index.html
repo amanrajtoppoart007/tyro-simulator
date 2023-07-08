@@ -39,6 +39,7 @@
 var mid=0;
 var tid=0;
 var amount = 0;
+var cashout =0;
 var apiKey= '';
 var posProductInfo =  {posProductVendor: "Tyro Payments", posProductName: "Mini Cloud POS", posProductVersion: "1.0.0"};
 var system = [TYROUI_SIMULATOR, CUSTOMUI_SIMULATOR];
@@ -147,8 +148,11 @@ document.addEventListener('message', function(message) {
          try {
             if(terminalStatus===1 && iclient!==null && iclient!==undefined)
          {
-               iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
-               iclient.initiatePurchase({amount: res.data.amount, cashout:res.data.cashout, integratedReceipt: true}, {
+             
+               amount = String(res.data.amount).toString();
+               cashout = String(res.data.cashout).toString();
+              var iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
+               iclient.initiatePurchase({amount: ramount, cashout:cashout, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
             const params = {
                 action:'merchant-receipt-success',
@@ -200,6 +204,6 @@ document.addEventListener('message', function(message) {
 </script>
 </head>
 <body>
-    
+
 </body>
 </html>
