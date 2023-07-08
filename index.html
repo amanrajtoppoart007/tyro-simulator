@@ -45,6 +45,11 @@
     var CUSTOMUI_TEST = TYRO;
 </script>
 <script type="text/javascript">
+    window.mid=0;
+    window.tid=0;
+    window.amount = 0;
+    window.apiKey= '';
+    window.posProductInfo =  {posProductVendor: "Tyro Payments", posProductName: "Mini Cloud POS", posProductVersion: "1.0.0"};
 var system = [TYROUI_SIMULATOR, CUSTOMUI_SIMULATOR];
 var configurationURLs = ["https://iclientsimulator.test.tyro.com/configuration.html", "https://iclient.test.tyro.com/configuration.html"];
 var configurationUrl = configurationURLs[0];
@@ -429,6 +434,11 @@ function formatResult(response) {
     result += "</table>";
     return result;
 }
+
+window.addEventListener('load', function(event) {
+    $("#mid").val(window.mid);
+    $("#tid").val(window.tid);
+});
 
 </script>
 </head>
