@@ -151,7 +151,7 @@ document.addEventListener('message', function(message) {
              
                amount = String(res.data.amount).toString();
                cashout = String(res.data.cashout).toString();
-              var iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
+               iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
                iclient.initiatePurchase({amount: ramount, cashout:cashout, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
             const params = {
