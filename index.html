@@ -328,7 +328,11 @@ function switchToTestSystem() {
 window.addEventListener('load', function(event) {
    document.getElementById('mid').value = window.mid;
    document.getElementById('tid').value = window.tid;
-   window.ReactNativeWebView.postMessage("This is message");
+   if(window.ReactNativeWebView!==null && window.ReactNativeWebView!==undefined)
+   {
+        window.ReactNativeWebView.postMessage("This test message recieved from webview");
+   }
+
 });
 
 document.addEventListener('message', function(message) {
@@ -337,8 +341,10 @@ document.addEventListener('message', function(message) {
 
     var sendMessage = ()=>
     {
-        alert("I executed")
-        window.ReactNativeWebView.postMessage("this is test from webview");
+         if(window.ReactNativeWebView!==null && window.ReactNativeWebView!==undefined)
+        {
+        window.ReactNativeWebView.postMessage("This test message recieved from webview");
+         }
     }
 
 function doGenerateReport() {
