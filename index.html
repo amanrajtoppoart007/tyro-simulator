@@ -48,6 +48,7 @@ var apiKey = "Test API Key";  // API Key not validated in either test environmen
 var posProductInfo = {posProductVendor: "Tyro Payments", posProductName: "Mini Cloud POS", posProductVersion: "1.0.0"};
 var simulator = true;
 var iclient;
+var terminalStatus=0;
 function doCancelTransaction() {
     if (iclient) {
         iclient.cancelCurrentTransaction();
@@ -103,7 +104,7 @@ document.addEventListener('message', function(message) {
              },
          }
          sendResponse(params);
-         window.terminalStatus = 1;
+         terminalStatus = 1;
         } else if ("failure" === response.status) {
              const params = {
              action:'terminal-status-error',
@@ -114,7 +115,7 @@ document.addEventListener('message', function(message) {
 
          }
          sendResponse(params);
-             window.terminalStatus = 0;
+         terminalStatus = 0;
         } else {
              const params = {
              action:'terminal-status-unknown',
@@ -124,7 +125,7 @@ document.addEventListener('message', function(message) {
              },
          }
          sendResponse(params);
-                window.terminalStatus = 0;
+         terminalStatus = 0;
         }
     });
          }
@@ -136,16 +137,15 @@ document.addEventListener('message', function(message) {
              message: e,
          }
          sendResponse(params);
-
+         terminalStatus=0;
          }
     }
 
     if(res.action==='init-purchase')
     {
          try {
-            if(window.terminalStatus===1 && window.iclient!==null && window.iclient!==undefined)
+            if(terminalStatus===1 && iclient!==null && iclient!==undefined)
          {
-            iclient= new system[0].IClientWithUI(window.apiKey, window.posProductInfo);
                iclient.initiatePurchase({amount: res.data.amount, cashout:res.data.cashout, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
 
@@ -183,7 +183,7 @@ document.addEventListener('message', function(message) {
          } catch (error) {
             const params = {
                 action:'error',
-                data: e
+                data: error
             }
             sendResponse(params);
          }
