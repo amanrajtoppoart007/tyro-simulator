@@ -129,7 +129,6 @@ document.addEventListener('message', function(message) {
     });
          }
          catch (e) {
-
             const params = {
              action:'pairing-failed',
              data: {
@@ -148,9 +147,9 @@ document.addEventListener('message', function(message) {
          try {
             if(terminalStatus===1 && iclient!==null && iclient!==undefined)
          {
+               iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
                iclient.initiatePurchase({amount: res.data.amount, cashout:res.data.cashout, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
-
             const params = {
                 action:'merchant-receipt-success',
                 data: receipt.merchantReceipt,
@@ -165,7 +164,6 @@ document.addEventListener('message', function(message) {
             }
             sendResponse(params);
             }
-
             const params = {
                 action:'transaction-success',
                 data: response,
@@ -201,5 +199,7 @@ document.addEventListener('message', function(message) {
 });
 </script>
 </head>
-<body></body>
+<body>
+    
+</body>
 </html>
