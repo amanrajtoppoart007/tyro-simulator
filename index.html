@@ -339,6 +339,12 @@ document.addEventListener('message', function(message) {
     {
         window.apiKey = res.data.apiKey;
         window.posProductInfo = res.data.posProductInfo;
+        const params = {
+             action:'config-set',
+             data: {},
+            message:'config successfully set'
+         }
+         sendResponse(params);
     }
 
     if(res.action==='init-terminal')
