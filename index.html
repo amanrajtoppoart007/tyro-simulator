@@ -326,7 +326,7 @@ document.addEventListener('message', function(message) {
     {
          try
          {
-              window.iclient = new system[1].IClient(window.apiKey, window.posProductInfo);
+              window.iclient = new system[0].IClient(window.apiKey, window.posProductInfo);
          const mid = res.data.mid;
          const tid = res.data.tid;
          iclient.pairTerminal(mid, tid, function(response) {
