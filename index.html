@@ -134,7 +134,7 @@ function doPurchase(_amount,_cashout)
          {
                iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
                amount = String(_amount.toFixed(0)).toString();
-     iclient.initiatePurchase({amount: _amount, cashout:_cashout, integratedReceipt: true}, {
+     iclient.initiatePurchase({amount: amount, cashout:_cashout, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
             const params = {
                 action:'merchant-receipt-success',
