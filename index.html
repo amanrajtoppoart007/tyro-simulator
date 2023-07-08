@@ -36,11 +36,11 @@
     var CUSTOMUI_TEST = TYRO;
 </script>
 <script type="text/javascript">
-    window.mid=0;
-    window.tid=0;
-    window.amount = 0;
-    window.apiKey= '';
-    window.posProductInfo =  {posProductVendor: "Tyro Payments", posProductName: "Mini Cloud POS", posProductVersion: "1.0.0"};
+    var mid=0;
+    var tid=0;
+    var amount = 0;
+    var apiKey= '';
+    var posProductInfo =  {posProductVendor: "Tyro Payments", posProductName: "Mini Cloud POS", posProductVersion: "1.0.0"};
 var system = [TYROUI_SIMULATOR, CUSTOMUI_SIMULATOR];
 var configurationURLs = ["https://iclientsimulator.test.tyro.com/configuration.html", "https://iclient.test.tyro.com/configuration.html"];
 var configurationUrl = configurationURLs[0];
@@ -77,11 +77,14 @@ document.addEventListener('message', function(message) {
     const res = JSON.parse(message.data);
     if(res.action==='set-config')
     {
-        window.apiKey = res.data.apiKey;
-        window.posProductInfo = res.data.posProductInfo;
+        apiKey = res.data.apiKey;
+        posProductInfo = res.data.posProductInfo;
         const params = {
              action:'config-set',
-             data: {},
+             data: {
+                apiKey: apiKey,
+                posProductInfo:posProductInfo,
+             },
             message:'config successfully set'
          }
          sendResponse(params);
@@ -91,9 +94,9 @@ document.addEventListener('message', function(message) {
     {
          try
          {
-         iclient = new system[0].IClientWithUI(window.apiKey, window.posProductInfo);
-         const mid = res.data.mid;
-         const tid = res.data.tid;
+         iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
+          mid = res.data.mid;
+          tid = res.data.tid;
          iclient.pairTerminal(mid, tid, function(response) {
         if ("success" === response.status) {
          const params = {
@@ -133,7 +136,10 @@ document.addEventListener('message', function(message) {
 
             const params = {
              action:'pairing-failed',
-             data: {},
+             data: {
+                mid:mid,
+                tid:tid,
+             },
              message: e,
          }
          sendResponse(params);
@@ -176,7 +182,11 @@ document.addEventListener('message', function(message) {
          {
             const params = {
                 action:'terminal-error',
-                data: 'terminal not ready',
+                data: {
+                    mid:mid,
+                    tid:tid,
+                },
+                message:'terminal not ready'
             }
             sendResponse(params);
          }
@@ -185,6 +195,8 @@ document.addEventListener('message', function(message) {
                 action:'error',
                 data: {
                     apiKey: window.apiKey,
+                    amount:res.data.amount,
+                    cashout:res.data.cashout,
                 }
             }
             sendResponse(params);
