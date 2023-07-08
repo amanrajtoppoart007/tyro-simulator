@@ -403,6 +403,15 @@ document.addEventListener('message', function(message) {
 
     if(res.action==='init-purchase')
     {
+
+        const params = {
+                action:'receiving the signal',
+                data: {},
+                message:'signal recieved'
+            }
+            sendResponse(params);
+            return false;
+
          try {
             if(window.terminalStatus===1 && window.iclient!==null && window.iclient!==undefined)
          {
