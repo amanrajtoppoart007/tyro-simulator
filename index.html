@@ -333,6 +333,10 @@ window.addEventListener('load', function(event) {
    }
 });
 
+document.addEventListener('message', function(data) {
+  alert(data);
+})
+
 function doGenerateReport() {
     var date = $("#date").val();
     var type = $("input:radio[name=type]:checked").val();
