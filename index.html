@@ -78,7 +78,7 @@ function pairTerminal(_mid,_tid)
 {
     try
          {
-         iclient = new system[1].IClient(apiKey, posProductInfo);
+         iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
          iclient.pairTerminal(_mid, _tid, function(response) {
         if ("success" === response.status) {
          const params = {
@@ -135,7 +135,7 @@ function doPurchase(_amount,_cashout)
              
                amount = String(_amount).toString();
                cashout = String(_cashout).toString();
-               iclient = new system[1].IClient(apiKey, posProductInfo);
+               iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
      iclient.initiatePurchase({amount: amount, cashout:cashout, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
             const params = {
