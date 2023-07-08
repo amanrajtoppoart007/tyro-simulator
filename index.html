@@ -335,8 +335,9 @@ document.addEventListener('message', function(message) {
   alert(JSON.stringify(message.data));
 })
 
-    function sendMessage()
+    var sendMessage = ()=>
     {
+        alert("I executed")
         window.postMessage("this is test from webview");
     }
 
