@@ -324,6 +324,15 @@ function switchToTestSystem() {
     simulator = false;
 }
 
+window.addEventListener('load', function(event) {
+   document.getElementById('mid').value = window.mid;
+   document.getElementById('tid').value = window.tid;
+   if(window.postMessage!==null && window.postMessage!==undefined)
+   {
+        window.postMessage("This is message");
+   }
+});
+
 function doGenerateReport() {
     var date = $("#date").val();
     var type = $("input:radio[name=type]:checked").val();
@@ -435,14 +444,7 @@ function formatResult(response) {
     return result;
 }
 
-window.addEventListener('load', function(event) {
-   document.getElementById('mid').value = window.mid;
-   document.getElementById('tid').value = window.tid;
-   if(window.postMessage!==null && window.postMessage!==undefined)
-   {
-        window.postMessage("This is message");
-   }
-});
+
 
 </script>
 </head>
