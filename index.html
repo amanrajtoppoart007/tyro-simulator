@@ -150,7 +150,9 @@ document.addEventListener('message', function(message) {
              
                amount = String(res.data.amount).toString();
                cashout = String(res.data.cashout).toString();
-         const result =      iclient.initiatePurchase({amount: ramount, cashout:cashout, integratedReceipt: true}, {
+               sendResponse(iclient);
+               return false;
+     iclient.initiatePurchase({amount: ramount, cashout:cashout, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
             const params = {
                 action:'merchant-receipt-success',
