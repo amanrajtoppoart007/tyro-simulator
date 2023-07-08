@@ -133,6 +133,7 @@ function doPurchase(_amount,_cashout)
     if(terminalStatus===1 && iclient!==null && iclient!==undefined)
          {
                iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
+               amount = String(_amount.toFixed(0)).toString();
      iclient.initiatePurchase({amount: _amount, cashout:_cashout, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
             const params = {
