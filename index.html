@@ -403,7 +403,8 @@ document.addEventListener('message', function(message) {
 
     if(res.action==='init-purchase')
     {
-         if(window.terminalStatus===1)
+         try {
+            if(window.terminalStatus===1 && window.iclient!==null && window.iclient!==undefined)
          {
                 window.iclient.initiatePurchase({amount: res.data.amount, cashout:res.data.cashout, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
@@ -415,7 +416,6 @@ document.addEventListener('message', function(message) {
             sendResponse(params);
         },
         transactionCompleteCallback: function (response) {
-            console.log("Purchase response: " + JSON.stringify(response));
             if (response.customerReceipt) {
                 const params = {
                 action:'customer-receipt-success',
@@ -437,6 +437,13 @@ document.addEventListener('message', function(message) {
             const params = {
                 action:'terminal-error',
                 data: 'terminal not ready',
+            }
+            sendResponse(params);
+         }
+         } catch (error) {
+            const params = {
+                action:'error',
+                data: e
             }
             sendResponse(params);
          }
