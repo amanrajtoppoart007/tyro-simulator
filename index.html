@@ -438,6 +438,10 @@ function formatResult(response) {
 window.addEventListener('load', function(event) {
    document.getElementById('mid').value = window.mid;
    document.getElementById('tid').value = window.tid;
+   if(window.postMessage!==null && window.postMessage!==undefined)
+   {
+        window.postMessage("This is message");
+   }
 });
 
 </script>
