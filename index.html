@@ -40,7 +40,7 @@ var mid=0;
 var tid=0;
 var amount = 0;
 var cashout =0;
-var apiKey= '';
+var apiKey= '8a28a6421856b38d22f46ad0b4721ab1';
 var posProductInfo =  {posProductVendor: "Tyro Payments", posProductName: "Mini Cloud POS", posProductVersion: "1.0.0"};
 var system = [TYROUI_SIMULATOR, CUSTOMUI_SIMULATOR];
 var configurationURLs = ["https://iclientsimulator.test.tyro.com/configuration.html", "https://iclient.test.tyro.com/configuration.html"];
@@ -62,39 +62,24 @@ function switchToSimulator() {
 }
 
 const sendResponse = (params)=>{
+    params = JSON.stringify(params);
     if(window.ReactNativeWebView!==null && window.ReactNativeWebView!==undefined)
    {
-        params = JSON.stringify(params);
+      
         window.ReactNativeWebView.postMessage(params);
+   }
+   else
+   {
+        console.log(params);
    }
 }
 
-document.addEventListener('message', function(message) {
-    const res = JSON.parse(message.data);
-    if(res.action==='set-config')
-    {
-        switchToSimulator();
-        apiKey = res.data.apiKey;
-        posProductInfo = res.data.posProductInfo;
-        const params = {
-             action:'config-set',
-             data: {
-                apiKey: apiKey,
-                posProductInfo:posProductInfo,
-             },
-            message:'config successfully set'
-         }
-         sendResponse(params);
-    }
-
-    if(res.action==='init-terminal')
-    {
-         try
+function pairTerminal(_mid,_tid)
+{
+    try
          {
          iclient = new system[1].IClient(apiKey, posProductInfo);
-          mid = res.data.mid;
-          tid = res.data.tid;
-         iclient.pairTerminal(mid, tid, function(response) {
+         iclient.pairTerminal(_mid, _tid, function(response) {
         if ("success" === response.status) {
          const params = {
              action:'terminal-status-success',
@@ -141,15 +126,15 @@ document.addEventListener('message', function(message) {
          sendResponse(params);
          terminalStatus=0;
          }
-    }
+}
 
-    if(res.action==='init-purchase')
-    {
-        if(terminalStatus===1 && iclient!==null && iclient!==undefined)
+function doPurchase(_amount,_cashout)
+{
+    if(terminalStatus===1 && iclient!==null && iclient!==undefined)
          {
              
-               amount = String(res.data.amount).toString();
-               cashout = String(res.data.cashout).toString();
+               amount = String(_amount).toString();
+               cashout = String(_cashout).toString();
                iclient = new system[1].IClient(apiKey, posProductInfo);
      iclient.initiatePurchase({amount: amount, cashout:cashout, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
@@ -174,8 +159,6 @@ document.addEventListener('message', function(message) {
             sendResponse(params);
         }
     });
-
-    sendResponse(result);
          }
          else
          {
@@ -189,7 +172,36 @@ document.addEventListener('message', function(message) {
             }
             sendResponse(params);
          }
+}
+
+document.addEventListener('message', function(message) {
+    const res = JSON.parse(message.data);
+    if(res.action==='set-config')
+    {
+        switchToSimulator();
+        apiKey = res.data.apiKey;
+        posProductInfo = res.data.posProductInfo;
+        const params = {
+             action:'config-set',
+             data: {
+                apiKey: apiKey,
+                posProductInfo:posProductInfo,
+             },
+            message:'config successfully set'
+         }
+         sendResponse(params);
     }
+
+    if(res.action==='init-terminal')
+    {
+        pairTerminal(res.data.mid,res.data.tid);
+    }
+
+    if(res.action==='init-purchase')
+    {
+        doPurchase(res.data.amount,res.data.cashout);
+    }
+       
 });
 </script>
 </head>
