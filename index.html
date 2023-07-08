@@ -327,14 +327,11 @@ function switchToTestSystem() {
 window.addEventListener('load', function(event) {
    document.getElementById('mid').value = window.mid;
    document.getElementById('tid').value = window.tid;
-   if(window.postMessage!==null && window.postMessage!==undefined)
-   {
-        window.postMessage("This is message");
-   }
+   window.postMessage("This is message");
 });
 
 document.addEventListener('message', function(data) {
-  alert(data);
+  alert(JSON.stringify(data));
 })
 
 function doGenerateReport() {
