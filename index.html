@@ -349,7 +349,9 @@ document.addEventListener('message', function(message) {
 
     if(res.action==='init-terminal')
     {
-          window.iclient = new system[1].IClient(window.apiKey, window.posProductInfo);
+         try
+         {
+              window.iclient = new system[1].IClient(window.apiKey, window.posProductInfo);
          const mid = res.data.mid;
          const tid = res.data.tid;
          iclient.pairTerminal(mid, tid, function(response) {
@@ -361,7 +363,7 @@ document.addEventListener('message', function(message) {
                  message:response.message,
              },
          }
-         sendMessage(params);
+         sendResponse(params);
          window.terminalStatus = 1;
         } else if ("failure" === response.status) {
              const params = {
@@ -372,7 +374,7 @@ document.addEventListener('message', function(message) {
              },
 
          }
-         sendMessage(params);
+         sendResponse(params);
              window.terminalStatus = 0;
         } else {
              const params = {
@@ -382,10 +384,21 @@ document.addEventListener('message', function(message) {
                  message:response.message,
              },
          }
-         sendMessage(params);
+         sendResponse(params);
                 window.terminalStatus = 0;
         }
     });
+         }
+         catch (e) {
+
+            const params = {
+             action:'pairing-failed',
+             data: {},
+             message: e,
+         }
+         sendResponse(params);
+
+         }
     }
 
     if(res.action==='init-purchase')
