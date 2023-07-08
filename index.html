@@ -328,7 +328,7 @@ function switchToTestSystem() {
 window.addEventListener('load', function(event) {
    document.getElementById('mid').value = window.mid;
    document.getElementById('tid').value = window.tid;
-   window.postMessage("This is message");
+   window.ReactNativeWebView.postMessage("This is message");
 });
 
 document.addEventListener('message', function(message) {
@@ -338,7 +338,7 @@ document.addEventListener('message', function(message) {
     var sendMessage = ()=>
     {
         alert("I executed")
-        window.postMessage("this is test from webview");
+        window.ReactNativeWebView.postMessage("this is test from webview");
     }
 
 function doGenerateReport() {
