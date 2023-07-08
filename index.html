@@ -47,242 +47,7 @@ var configurationUrl = configurationURLs[0];
 var apiKey = "Test API Key";  // API Key not validated in either test environment
 var posProductInfo = {posProductVendor: "Tyro Payments", posProductName: "Mini Cloud POS", posProductVersion: "1.0.0"};
 var simulator = true;
-
-function showTransactionsPage() {
-    hilightNavigationBar("transactions");
-    showTransactionsNavigation();
-    showPurchaseWithTyroUI();
-}
-
-function showReportingPage() {
-    hilightNavigationBar("reporting");
-    showReportingNavigation();
-    showReconciliationReport();
-}
-
-function showConfigurationPage() {
-    hilightNavigationBar("configuration");
-    showConfigurationNavigation();
-    showPairing();
-}
-
-function showTransactionsNavigation() {
-    $("#navigation").html($("#transactionsNavigation").html());
-}
-
-function showReportingNavigation() {
-    $("#navigation").html($("#reportingNavigation").html());
-}
-
-function showConfigurationNavigation() {
-    $("#navigation").html($("#configurationNavigation").html());
-}
-
-function showPurchaseWithTyroUI() {
-    hilightNavigation("purchaseWithTyroUI");
-    $("#content").html($("#purchaseWithTyroUIContent").html());
-}
-
-function showRefundWithTyroUI() {
-    hilightNavigation("refundWithTyroUI");
-    $("#content").html($("#refundWithTyroUIContent").html());
-}
-
-function showPurchaseWithCustomUI() {
-    hilightNavigation("purchaseWithCustomUI");
-    $("#content").html($("#purchaseWithCustomUIContent").html());
-}
-
-function showRefundWithCustomUI() {
-    hilightNavigation("refundWithCustomUI");
-    $("#content").html($("#refundWithCustomUIContent").html());
-}
-
-function showSystemChoice() {
-    hilightNavigation("systemChoice");
-    $("#content").html($("#systemChoiceContent").html());
-    if (simulator) {
-        $("#simulator").click();
-    } else {
-        $("#test-system").click();
-    }
-}
-
-function showReconciliationReport() {
-    hilightNavigation("reconciliationReport");
-    $("#content").html($("#reconciliationReportContent").html());
-    $("#date").datepicker({"dateFormat": "yymmdd"});
-    $("#date").val($.datepicker.formatDate('yymmdd', new Date()));
-}
-
-function showSettlement() {
-    hilightNavigation("settlement");
-    $("#content").html($("#settlementContent").html());
-}
-
-function showPairing() {
-    hilightNavigation("pairing");
-    $("#content").html($("#pairingContent").html());
-    var iclient = new system[1].IClient(apiKey, posProductInfo);
-    iclient.getConfiguration(function(config) {
-        $("#mid").val(config.mid);
-        $("#tid").val(config.tid);
-    });
-}
-
-function showTerminalInfo() {
-    hilightNavigation("terminalInfo");
-    $("#content").html($("#terminalInfoContent").html());
-}
-
-function showBrowserCheck() {
-    hilightNavigation("browserCheck");
-    $("#content").html($("#browserCheckContent").html());
-}
-
-function hilightNavigationBar(selected) {
-    if (!$("#" + selected).hasClass("active")) {
-        $("#" + selected).addClass("active")
-    }
-    $("#navigation-bar").children("li").each(function (i) {
-        if (this.id != selected) {
-            $(this).removeClass("active");
-        }
-    });
-}
-
-function hilightNavigation(selected) {
-    if (!$("#" + selected).hasClass("active")) {
-        $("#" + selected).addClass("active")
-    }
-    $("#navigation").children("li").each(function (i) {
-        if (this.id != selected) {
-            $(this).removeClass("active");
-        }
-    });
-}
-
-$().ready(function () {
-    showTransactionsPage();
-});
-
-function doPurchaseWithTyroUI() {
-    $("#result").html('');
-    $("#merchantReceipt").html('');
-    $("#customerReceipt").html('');
-    var amount = $("#amount").val();
-    var cashout = $("#cashout").val();
-    var iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
-    iclient.initiatePurchase({amount: amount, cashout: cashout, integratedReceipt: true}, {
-        receiptCallback: function (receipt) {
-            console.log("Print merchant receipt:");
-            console.log(JSON.stringify(receipt));
-            $("#merchantReceipt").html(formatReceipt(receipt.merchantReceipt));
-        },
-        transactionCompleteCallback: function (response) {
-            console.log("Purchase response: " + JSON.stringify(response));
-            if (response.customerReceipt) {
-                $("#customerReceipt").html(formatReceipt(response.customerReceipt));
-            }
-            $("#result").html(formatResult(response));
-        }
-    });
-}
-
-function doRefundWithTyroUI() {
-    $("#result").html('');
-    $("#merchantReceipt").html('');
-    $("#customerReceipt").html('');
-    var amount = $("#amount").val();
-    var iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
-    iclient.initiateRefund({amount: amount, integratedReceipt: true}, {
-        receiptCallback: function (receipt) {
-            console.log("Print merchant receipt:");
-            console.log(JSON.stringify(receipt));
-            $("#merchantReceipt").html(formatReceipt(receipt.merchantReceipt));
-        },
-        transactionCompleteCallback: function (response) {
-            console.log("Refund response: " + JSON.stringify(response));
-            if (response.customerReceipt) {
-                $("#customerReceipt").html(formatReceipt(response.customerReceipt));
-            }
-            $("#result").html(formatResult(response));
-        }
-    });
-}
-
 var iclient;
-
-function doPurchaseWithCustomUI() {
-    $("#result").html('');
-    $("#merchantReceipt").html('');
-    $("#customerReceipt").html('');
-    var amount = $("#amount").val();
-    var cashout = $("#cashout").val();
-    iclient = new system[1].IClient(apiKey, posProductInfo);
-    iclient.initiatePurchase({amount: amount, cashout: cashout, integratedReceipt: true}, {
-        statusMessageCallback: function (message) {
-            console.log("Status: " + message);
-            $("#messages").text(message);
-        },
-        questionCallback: function (question, answerCallback) {
-            console.log("Question: " + JSON.stringify(question));
-            var buttons = question.options.reverse().map(function (option) {
-                return {
-                    label: option,
-                    callback: function () {
-                        answerCallback(option);
-                    }
-                };
-            });
-            bootbox.dialog(question.text, buttons);
-        },
-        receiptCallback: function (receipt) {
-            $("#merchantReceipt").html(formatReceipt(receipt.merchantReceipt));
-        },
-        transactionCompleteCallback: function (response) {
-            if (response.customerReceipt) {
-                $("#customerReceipt").html(formatReceipt(response.customerReceipt));
-            }
-            $("#result").html(formatResult(response));
-        }
-    });
-}
-
-function doRefundWithCustomUI() {
-    $("#result").html('');
-    $("#merchantReceipt").html('');
-    $("#customerReceipt").html('');
-    var amount = $("#amount").val();
-    iclient = new system[1].IClient(apiKey, posProductInfo);
-    iclient.initiateRefund({amount: amount, integratedReceipt: true}, {
-        statusMessageCallback: function(message) {
-            console.log("Status: " + message);
-            $("#messages").text(message);
-        },
-        questionCallback: function (question, answerCallback) {
-            var buttons = question.options.reverse().map(function (option) {
-                return {
-                    label: option,
-                    callback: function() {
-                        answerCallback(option);
-                    }
-                };
-            });
-            bootbox.dialog(question.text, buttons);
-        },
-        receiptCallback: function(receipt) {
-            $("#merchantReceipt").html(formatReceipt(receipt.merchantReceipt));
-        },
-        transactionCompleteCallback: function (response) {
-            if (response.customerReceipt) {
-                $("#customerReceipt").html(formatReceipt(response.customerReceipt));
-            }
-            $("#result").html(formatResult(response));
-        }
-    });
-}
-
 function doCancelTransaction() {
     if (iclient) {
         iclient.cancelCurrentTransaction();
@@ -296,7 +61,6 @@ function doCancelTransaction() {
 function switchToTestSystem() {
     system = [TYROUI_TEST, CUSTOMUI_TEST];
     configurationUrl = configurationURLs[1];
-    $("#currentSystem").html("The Test System is now in use");
     simulator = false;
 }
 
@@ -326,7 +90,7 @@ document.addEventListener('message', function(message) {
     {
          try
          {
-              window.iclient = new system[0].IClient(window.apiKey, window.posProductInfo);
+         iclient = new system[0].IClientWithUI(window.apiKey, window.posProductInfo);
          const mid = res.data.mid;
          const tid = res.data.tid;
          iclient.pairTerminal(mid, tid, function(response) {
@@ -378,19 +142,10 @@ document.addEventListener('message', function(message) {
 
     if(res.action==='init-purchase')
     {
-
-        const params = {
-                action:'receiving the signal',
-                data: {},
-                message:'signal recieved'
-            }
-            sendResponse(params);
-            return false;
-
          try {
             if(window.terminalStatus===1 && window.iclient!==null && window.iclient!==undefined)
          {
-               var iclient = new system[0].IClientWithUI(window.apiKey, window.posProductInfo);
+            iclient= new system[0].IClientWithUI(window.apiKey, window.posProductInfo);
                iclient.initiatePurchase({amount: res.data.amount, cashout:res.data.cashout, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
 
@@ -433,43 +188,7 @@ document.addEventListener('message', function(message) {
             sendResponse(params);
          }
     }
-})
-
-function doGenerateReport() {
-    var date = $("#date").val();
-    var type = $("input:radio[name=type]:checked").val();
-    var format = $("input:radio[name=format]:checked").val();
-    var iclient = new system[1].IClient(apiKey, posProductInfo);
-    iclient.reconciliationReport({
-        terminalBusinessDay: date,
-        type: type,
-        format: format
-    }, function(report) {
-        if ("success" === report.result) {
-            if ("xml" === report.format) {
-                $("#report").html("<pre class=\"prettyprint\">" + report.data.replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</pre>");
-            } else {
-                $("#report").html("<pre class=\"prettyprint\">" + report.data + "</pre>");
-            }
-        } else if (report.error) {
-            $("#report").text(report.error);
-        } else {
-            $("#report").text("An unknown error has occurred while generating report");
-        }
-    });
-}
-
-function doSettlement() {
-    var iclient = new system[1].IClient(apiKey, posProductInfo);
-    iclient.manualSettlement(function(response) {
-        console.log("Settlement response: " + JSON.stringify(response));
-        if ("success" === response.result) {
-            $("#result").text("Success: " + response.message + " (new day is " + response.currentTerminalBusinessDay + ")");
-        } else {
-            $("#result").text("Failure: " + response.message);
-        }
-    });
-}
+});
 </script>
 </head>
 <body></body>
