@@ -36,11 +36,11 @@
     var CUSTOMUI_TEST = TYRO;
 </script>
 <script type="text/javascript">
-    var mid=0;
-    var tid=0;
-    var amount = 0;
-    var apiKey= '';
-    var posProductInfo =  {posProductVendor: "Tyro Payments", posProductName: "Mini Cloud POS", posProductVersion: "1.0.0"};
+var mid=0;
+var tid=0;
+var amount = 0;
+var apiKey= '';
+var posProductInfo =  {posProductVendor: "Tyro Payments", posProductName: "Mini Cloud POS", posProductVersion: "1.0.0"};
 var system = [TYROUI_SIMULATOR, CUSTOMUI_SIMULATOR];
 var configurationURLs = ["https://iclientsimulator.test.tyro.com/configuration.html", "https://iclient.test.tyro.com/configuration.html"];
 var configurationUrl = configurationURLs[0];
@@ -54,15 +54,10 @@ function doCancelTransaction() {
         iclient.cancelCurrentTransaction();
     }
 }
-
-
-
-
-
-function switchToTestSystem() {
-    system = [TYROUI_TEST, CUSTOMUI_TEST];
-    configurationUrl = configurationURLs[1];
-    simulator = false;
+function switchToSimulator() {
+    system = [TYROUI_SIMULATOR, CUSTOMUI_SIMULATOR];
+    configurationUrl = configurationURLs[0];
+    simulator = true;
 }
 
 const sendResponse = (params)=>{
@@ -77,6 +72,7 @@ document.addEventListener('message', function(message) {
     const res = JSON.parse(message.data);
     if(res.action==='set-config')
     {
+        switchToSimulator();
         apiKey = res.data.apiKey;
         posProductInfo = res.data.posProductInfo;
         const params = {
