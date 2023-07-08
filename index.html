@@ -432,6 +432,14 @@ document.addEventListener('message', function(message) {
         }
     });
          }
+         else
+         {
+            const params = {
+                action:'terminal-error',
+                data: 'terminal not ready',
+            }
+            sendResponse(params);
+         }
     }
 })
 
