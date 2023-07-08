@@ -325,27 +325,96 @@ function switchToTestSystem() {
     simulator = false;
 }
 
-window.addEventListener('load', function(event) {
-   document.getElementById('mid').value = window.mid;
-   document.getElementById('tid').value = window.tid;
-   if(window.ReactNativeWebView!==null && window.ReactNativeWebView!==undefined)
+const sendResponse = (params)=>{
+    if(window.ReactNativeWebView!==null && window.ReactNativeWebView!==undefined)
    {
-        window.ReactNativeWebView.postMessage("This test message recieved from webview");
+        params = JSON.stringify(params);
+        window.ReactNativeWebView.postMessage(params);
    }
-
-});
+}
 
 document.addEventListener('message', function(message) {
-  alert(JSON.stringify(message.data));
-})
-
-    var sendMessage = ()=>
+    const res = JSON.parse(message.data);
+    if(res.action==='set-config')
     {
-         if(window.ReactNativeWebView!==null && window.ReactNativeWebView!==undefined)
-        {
-        window.ReactNativeWebView.postMessage("This test message recieved from webview");
+        window.apiKey = res.data.apiKey;
+        window.posProductInfo = res.data.posProductInfo;
+    }
+
+    if(res.action==='init-terminal')
+    {
+          window.iclient = new system[1].IClient(window.apiKey, window.posProductInfo);
+         const mid = res.data.mid;
+         const tid = res.data.tid;
+         iclient.pairTerminal(mid, tid, function(response) {
+        if ("success" === response.status) {
+         const params = {
+             action:'terminal-status-success',
+             data: {
+                 status: response.status,
+                 message:response.message,
+             },
+         }
+         sendMessage(params);
+         window.terminalStatus = 1;
+        } else if ("failure" === response.status) {
+             const params = {
+             action:'terminal-status-error',
+             data: {
+                 status: response.status,
+                 message:response.message,
+             },
+
+         }
+         sendMessage(params);
+             window.terminalStatus = 0;
+        } else {
+             const params = {
+             action:'terminal-status-unknown',
+             data: {
+                 status: response.status,
+                 message:response.message,
+             },
+         }
+         sendMessage(params);
+                window.terminalStatus = 0;
+        }
+    });
+    }
+
+    if(res.action==='init-purchase')
+    {
+         if(window.terminalStatus===1)
+         {
+                window.iclient.initiatePurchase({amount: res.data.amount, cashout:res.data.cashout, integratedReceipt: true}, {
+        receiptCallback: function (receipt) {
+
+            const params = {
+                action:'merchant-receipt-success',
+                data: receipt.merchantReceipt,
+            }
+            sendResponse(params);
+        },
+        transactionCompleteCallback: function (response) {
+            console.log("Purchase response: " + JSON.stringify(response));
+            if (response.customerReceipt) {
+                const params = {
+                action:'customer-receipt-success',
+                data: receipt.customerReceipt,
+            }
+            sendResponse(params);
+            }
+
+            const params = {
+                action:'transaction-success',
+                data: response,
+            }
+            sendResponse(params);
+        }
+    });
          }
     }
+})
 
 function doGenerateReport() {
     var date = $("#date").val();
