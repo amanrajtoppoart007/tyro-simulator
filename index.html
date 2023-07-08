@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+<!--suppress ALL -->
 <html lang="en">
 <head>
 <title>Tyro iClient Samples</title>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css"/>
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/prettify/r224/prettify.css">
-<style type="text/css">
+<style>
     body {
         padding-top: 60px;
         padding-bottom: 40px;
@@ -330,8 +331,8 @@ window.addEventListener('load', function(event) {
    window.postMessage("This is message");
 });
 
-document.addEventListener('message', function(data) {
-  alert(JSON.stringify(data));
+document.addEventListener('message', function(message) {
+  alert(JSON.stringify(message.data));
 })
 
 function doGenerateReport() {
@@ -344,8 +345,8 @@ function doGenerateReport() {
         type: type,
         format: format
     }, function(report) {
-        if ("success" == report.result) {
-            if ("xml" == report.format) {
+        if ("success" === report.result) {
+            if ("xml" === report.format) {
                 $("#report").html("<pre class=\"prettyprint\">" + report.data.replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</pre>");
             } else {
                 $("#report").html("<pre class=\"prettyprint\">" + report.data + "</pre>");
@@ -362,7 +363,7 @@ function doSettlement() {
     var iclient = new system[1].IClient(apiKey, posProductInfo);
     iclient.manualSettlement(function(response) {
         console.log("Settlement response: " + JSON.stringify(response));
-        if ("success" == response.result) {
+        if ("success" === response.result) {
             $("#result").text("Success: " + response.message + " (new day is " + response.currentTerminalBusinessDay + ")");
         } else {
             $("#result").text("Failure: " + response.message);
@@ -375,10 +376,10 @@ function doPairing() {
     var tid = $("#tid").val();
     var iclient = new system[1].IClient(apiKey, posProductInfo);
     iclient.pairTerminal(mid, tid, function(response) {
-        if ("success" == response.status) {
+        if ("success" === response.status) {
             console.log("Pairing success: " + JSON.stringify(response));
             $("#result").text("Success: " + response.message);
-        } else if ("failure" == response.status) {
+        } else if ("failure" === response.status) {
             console.log("Pairing failure: " + JSON.stringify(response));
             $("#result").text("Failure: " + response.message);
         } else {
@@ -390,10 +391,10 @@ function doPairing() {
 function doTerminalInfo() {
     var iclient = new system[1].IClient(apiKey, posProductInfo);
     iclient.terminalInfo(function(response) {
-        if ("success" == response.status) {
+        if ("success" === response.status) {
             console.log("Terminal info success: " + JSON.stringify(response));
             $("#result").html(createTerminalInfoTable(response.terminalInfo));
-        } else if ("failure" == response.status) {
+        } else if ("failure" === response.status) {
             console.log("Terminal info failure: " + JSON.stringify(response));
             $("#result").text("Failure: " + response.message);
         } else {
