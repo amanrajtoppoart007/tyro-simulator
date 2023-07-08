@@ -150,6 +150,7 @@ document.addEventListener('message', function(message) {
              
                amount = String(res.data.amount).toString();
                cashout = String(res.data.cashout).toString();
+               iclient = new system[1].IClient(apiKey, posProductInfo);
                sendResponse(iclient);
                return false;
      iclient.initiatePurchase({amount: ramount, cashout:cashout, integratedReceipt: true}, {
