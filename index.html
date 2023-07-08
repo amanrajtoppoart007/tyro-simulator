@@ -183,7 +183,9 @@ document.addEventListener('message', function(message) {
          } catch (error) {
             const params = {
                 action:'error',
-                data: error
+                data: {
+                    apiKey: window.apiKey,
+                }
             }
             sendResponse(params);
          }
