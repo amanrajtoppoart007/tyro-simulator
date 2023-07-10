@@ -173,6 +173,8 @@ function doPurchase(_amount,_cashout)
          }
 }
 
+
+
 document.addEventListener('message', function(message) {
     const res = JSON.parse(message.data);
     if(res.action==='set-config')
