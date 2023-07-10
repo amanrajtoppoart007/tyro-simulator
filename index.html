@@ -65,7 +65,7 @@ const sendResponse = (params)=>{
     params = JSON.stringify(params);
     if(window.ReactNativeWebView!==null && window.ReactNativeWebView!==undefined)
    {
-      
+
         window.ReactNativeWebView.postMessage(params);
    }
    else
@@ -130,12 +130,12 @@ function pairTerminal(_mid,_tid)
 
 function doPurchase(_amount,_cashout)
 {
-    if(terminalStatus===1 && iclient!==null && iclient!==undefined)
+    if(terminalStatus===1)
          {
-               iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
+              let iClient = new system[0].IClientWithUI(apiKey, posProductInfo);
                amount = String(_amount.toFixed(0)).toString();
                cashout = String(_cashout.toFixed(0)).toString();
-     iclient.initiatePurchase({amount: amount, cashout:_cashout, integratedReceipt: true}, {
+     iClient.initiatePurchase({amount: amount, cashout:_cashout, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
             const params = {
                 action:'merchant-receipt-success',
@@ -152,7 +152,7 @@ function doPurchase(_amount,_cashout)
             sendResponse(params);
             }
             const params = {
-                action:'transaction-success',
+                action:'transaction-complete',
                 data: response,
             }
             sendResponse(params);
@@ -180,6 +180,8 @@ document.addEventListener('message', function(message) {
         switchToSimulator();
         apiKey = res.data.apiKey;
         posProductInfo = res.data.posProductInfo;
+        mid= res.data.mid;
+        tid=res.data.tid;
         const params = {
              action:'config-set',
              data: {
@@ -188,6 +190,7 @@ document.addEventListener('message', function(message) {
              },
             message:'config successfully set'
          }
+          terminalStatus = 1;
          sendResponse(params);
     }
 
@@ -200,7 +203,7 @@ document.addEventListener('message', function(message) {
     {
         doPurchase(res.data.amount,res.data.cashout);
     }
-       
+
 });
 </script>
 </head>
