@@ -1,39 +1,30 @@
 <!doctype html>
+<!--suppress ES6ConvertVarToLetConst -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tyro iClient Samples</title>
-<style>
-    body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-    }
-
-    .mt15 {
-        margin-top: 15px;
-    }
-</style>
-<script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.9.1.js"></script>
 <script type="text/javascript" src="https://iclientsimulator.test.tyro.com/iclient-with-ui-v1.js"></script>
 <script type="text/javascript">
-    // Only required because we are loading both iclient versions into the global namespace
+    // Only required because we are loading both iClient versions into the global namespace
     var TYROUI_SIMULATOR = TYRO;
 </script>
 <script type="text/javascript" src="https://iclientsimulator.test.tyro.com/iclient-v1.js"></script>
 <script type="text/javascript">
-    // Only required because we are loading both iclient versions into the global namespace
+    // Only required because we are loading both iClient versions into the global namespace
     var CUSTOMUI_SIMULATOR = TYRO;
 </script>
 <script type="text/javascript" src="https://iclient.test.tyro.com/iclient-with-ui-v1.js"></script>
 <script type="text/javascript">
-    // Only required because we are loading both iclient versions into the global namespace
-    var TYROUI_TEST = TYRO;
+    // Only required because we are loading both iClient versions into the global namespace
+   // var TYROUI_TEST = TYRO;
 </script>
 <script type="text/javascript" src="https://iclient.test.tyro.com/iclient-v1.js"></script>
 <script type="text/javascript">
-    // Only required because we are loading both iclient versions into the global namespace
-    var CUSTOMUI_TEST = TYRO;
+    // Only required because we are loading both iClient versions into the global namespace
+   // var CUSTOMUI_TEST = TYRO;
 </script>
 <script type="text/javascript">
 var mid=329;
@@ -45,16 +36,8 @@ var posProductInfo =  {posProductVendor: "Tyro Payments", posProductName: "Mini 
 var system = [TYROUI_SIMULATOR, CUSTOMUI_SIMULATOR];
 var configurationURLs = ["https://iclientsimulator.test.tyro.com/configuration.html", "https://iclient.test.tyro.com/configuration.html"];
 var configurationUrl = configurationURLs[0];
-var apiKey = "Test API Key";  // API Key not validated in either test environment
-var posProductInfo = {posProductVendor: "Tyro Payments", posProductName: "Mini Cloud POS", posProductVersion: "1.0.0"};
 var simulator = true;
-var iclient;
 var terminalStatus=0;
-function doCancelTransaction() {
-    if (iclient) {
-        iclient.cancelCurrentTransaction();
-    }
-}
 function switchToSimulator() {
     system = [TYROUI_SIMULATOR, CUSTOMUI_SIMULATOR];
     configurationUrl = configurationURLs[0];
@@ -74,61 +57,7 @@ const sendResponse = (params)=>{
    }
 }
 
-function pairTerminal(_mid,_tid)
-{
-    try
-         {
-         iclient = new system[0].IClientWithUI(apiKey, posProductInfo);
-         iclient.pairTerminal(_mid, _tid, function(response) {
-        if ("success" === response.status) {
-         const params = {
-             action:'terminal-status-success',
-             data: {
-                 status: response.status,
-                 message:response.message,
-             },
-         }
-         sendResponse(params);
-         terminalStatus = 1;
-        } else if ("failure" === response.status) {
-             const params = {
-             action:'terminal-status-error',
-             data: {
-                 status: response.status,
-                 message:response.message,
-             },
-
-         }
-         sendResponse(params);
-         terminalStatus = 0;
-        } else {
-             const params = {
-             action:'terminal-status-unknown',
-             data: {
-                 status: response.status,
-                 message:response.message,
-             },
-         }
-         sendResponse(params);
-         terminalStatus = 0;
-        }
-    });
-         }
-         catch (e) {
-            const params = {
-             action:'pairing-failed',
-             data: {
-                mid:mid,
-                tid:tid,
-             },
-             message: e,
-         }
-         sendResponse(params);
-         terminalStatus=0;
-         }
-}
-
-function doPurchase(_amount,_cashout)
+function doPurchaseWithTyroUI(_amount,_cashout)
 {
     if(terminalStatus===1)
          {
@@ -173,7 +102,33 @@ function doPurchase(_amount,_cashout)
          }
 }
 
-
+function doRefundWithTyroUI(_amount) {
+    let iClient = new system[0].IClientWithUI(apiKey, posProductInfo);
+      amount = String(_amount.toFixed(0)).toString();
+    iClient.initiateRefund({amount: amount, integratedReceipt: true}, {
+        receiptCallback: function (receipt) {
+           const params = {
+                action:'merchant-receipt-success',
+                data: receipt.merchantReceipt,
+            }
+            sendResponse(params);
+        },
+        transactionCompleteCallback: function (response) {
+             if (response.customerReceipt) {
+                const params = {
+                action:'customer-receipt-success',
+                data: response.customerReceipt,
+            }
+            sendResponse(params);
+            }
+            const params = {
+                action:'refund-complete',
+                data: response,
+            }
+            sendResponse(params);
+        }
+    });
+}
 
 document.addEventListener('message', function(message) {
     const res = JSON.parse(message.data);
@@ -195,15 +150,14 @@ document.addEventListener('message', function(message) {
           terminalStatus = 1;
          sendResponse(params);
     }
-
-    if(res.action==='init-terminal')
-    {
-        pairTerminal(res.data.mid,res.data.tid);
-    }
-
     if(res.action==='init-purchase')
     {
-        doPurchase(res.data.amount,res.data.cashout);
+        doPurchaseWithTyroUI(res.data.amount,res.data.cashout);
+    }
+
+    if(res.action==='init-refund')
+    {
+        doRefundWithTyroUI(res.data.amount);
     }
 
 });
