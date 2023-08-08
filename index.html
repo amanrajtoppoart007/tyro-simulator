@@ -154,7 +154,7 @@ document.addEventListener('message', function(message) {
     }
     if(res.action==='init-purchase')
     {
-        doPurchaseWithTyroUI(res.data.amount,res.data.cashout,res.data.isReceipt??true,res.data.isSurcharge??false);
+        doPurchaseWithTyroUI(res.data.amount,res.data.cashout,res?.data?.isReceipt??true,res?.data?.isSurcharge??false);
     }
 
     if(res.action==='init-refund')
