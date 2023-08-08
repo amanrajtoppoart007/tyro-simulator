@@ -59,7 +59,9 @@ const sendResponse = (params)=>{
 
 function doPurchaseWithTyroUI(_amount,_cashout,isReceipt,isSurcharge)
 {
-    if(terminalStatus===1)
+    try
+    {
+      if(terminalStatus===1)
          {
               let iClient = new system[0].IClientWithUI(apiKey, posProductInfo);
                amount = String(_amount.toFixed(0)).toString();
@@ -100,10 +102,25 @@ function doPurchaseWithTyroUI(_amount,_cashout,isReceipt,isSurcharge)
             }
             sendResponse(params);
          }
+    }
+  catch(e)
+    {
+       const params = {
+                action:'terminal-error',
+                data: {
+                    mid:mid,
+                    tid:tid,
+                },
+                message:e
+            }
+            sendResponse(params);
+    }
 }
 
 function doRefundWithTyroUI(_amount) {
-    let iClient = new system[0].IClientWithUI(apiKey, posProductInfo);
+  try
+  {
+      let iClient = new system[0].IClientWithUI(apiKey, posProductInfo);
       amount = String(_amount.toFixed(0)).toString();
     iClient.initiateRefund({amount: amount, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
@@ -128,6 +145,19 @@ function doRefundWithTyroUI(_amount) {
             sendResponse(params);
         }
     });
+  }
+    catch(e)
+    {
+       const params = {
+                action:'terminal-error',
+                data: {
+                    mid:mid,
+                    tid:tid,
+                },
+                message:e
+            }
+            sendResponse(params);
+    }
 }
 
 document.addEventListener('message', function(message) {
