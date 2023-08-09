@@ -57,6 +57,15 @@ const sendResponse = (params)=>{
    }
 }
 
+
+function setConfig(_apiKey,_mid,_tid)
+{
+  apiKey = _apiKey;
+  mid = _mid;
+  tid = _tid;
+  terminalStatus = 1;
+}
+
 function doPurchaseWithTyroUI(_amount,_cashout,isReceipt,isSurcharge)
 {
     try
@@ -162,19 +171,17 @@ document.addEventListener('message', function(message) {
     if(res.action==='set-config')
     {
         switchToSimulator();
-        apiKey = res.data.apiKey;
-        posProductInfo = res.data.posProductInfo;
-        mid= res.data.mid;
-        tid=res.data.tid;
+        const {apiKey:_apiKey,mid:_mid,tid:_tid,posProductInfo:_productInfo} = res?.data;
+          setConfig(_apiKey,_mid,_tid);
         const params = {
              action:'config-set',
              data: {
-                apiKey: apiKey,
-                posProductInfo:posProductInfo,
+                apiKey: _apiKey,
+                posProductInfo:_productInfo,
              },
             message:'config successfully set'
          }
-          terminalStatus = 1;
+
          sendResponse(params);
     }
     if(res.action==='init-purchase')
