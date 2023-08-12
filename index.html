@@ -118,7 +118,7 @@ function doPurchaseWithTyroUI(_amount,_cashout,isReceipt,isSurcharge)
                     mid:mid,
                     tid:tid,
                 },
-                message:e
+                message:typeof e ==='object'? JSON.stringify(e): e?.toString(),
             }
             sendResponse(params);
     }
