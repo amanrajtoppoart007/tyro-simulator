@@ -171,7 +171,7 @@ function doRefundWithTyroUI(_amount) {
                     mid:mid,
                     tid:tid,
                 },
-                message:e
+                message: typeof e ==='object'? JSON.stringify(e): e?.toString(),
             }
             sendResponse(params);
     }
