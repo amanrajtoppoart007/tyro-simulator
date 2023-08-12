@@ -84,7 +84,7 @@ function doPurchaseWithTyroUI(_amount,_cashout,isReceipt,isSurcharge)
             sendResponse(params);
         },
         transactionCompleteCallback: function (response) {
-            if (response.customerReceipt) {
+            if (response?.customerReceipt?.length>0) {
                 const params = {
                 action:'customer-receipt-success',
                 data: response.customerReceipt,
@@ -131,14 +131,25 @@ function doRefundWithTyroUI(_amount) {
       amount = String(_amount.toFixed(0)).toString();
     iClient.initiateRefund({amount: amount, integratedReceipt: true}, {
         receiptCallback: function (receipt) {
-           const params = {
+          if(receipt?.merchantReceipt?.length>0)
+          {
+             const params = {
                 action:'merchant-receipt-success',
                 data: receipt.merchantReceipt,
             }
             sendResponse(params);
+          }
+           if(receipt?.customerReceipt?.length>0)
+          {
+             const params = {
+                action:'customer-receipt-success',
+                data: receipt.customerReceipt,
+            }
+            sendResponse(params);
+          }
         },
         transactionCompleteCallback: function (response) {
-             if (response.customerReceipt) {
+             if (response?.customerReceipt?.length>0) {
                 const params = {
                 action:'customer-receipt-success',
                 data: response.customerReceipt,
