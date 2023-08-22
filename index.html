@@ -198,7 +198,7 @@ document.addEventListener('message', function(message) {
     if(res.action==='init-purchase')
     {
          const {amount:t_amount, cashout:t_cashout, isReceipt,isSurcharge} =res.data;
-        doPurchaseWithTyroUI(t_amount,t_cashout,isReceipt??true,isSurcharge??false);
+        doPurchaseWithTyroUI(t_amount,t_cashout,isReceipt,isSurcharge);
     }
 
     if(res.action==='init-refund')
