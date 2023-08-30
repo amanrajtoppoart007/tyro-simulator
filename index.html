@@ -128,8 +128,7 @@ function doRefundWithTyroUI(_amount) {
   try
   {
       let iClient = new system[0].IClientWithUI(apiKey, posProductInfo);
-      amount = String(_amount.toFixed(0)).toString();
-    iClient.initiateRefund({amount: amount, integratedReceipt: true}, {
+    iClient.initiateRefund({amount: _amount.toFixed(0), integratedReceipt: true}, {
         receiptCallback: function (receipt) {
           if(receipt?.merchantReceipt?.length>0)
           {
