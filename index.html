@@ -4,28 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tyro iClient Samples</title>
+<title>FoodShip POS Tyro Payment Gateway</title>
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.9.1.js"></script>
 <script type="text/javascript" src="https://iclientsimulator.test.tyro.com/iclient-with-ui-v1.js"></script>
 <script type="text/javascript">
-    // Only required because we are loading both iClient versions into the global namespace
     var TYROUI_SIMULATOR = TYRO;
 </script>
 <script type="text/javascript" src="https://iclientsimulator.test.tyro.com/iclient-v1.js"></script>
 <script type="text/javascript">
-    // Only required because we are loading both iClient versions into the global namespace
     var CUSTOMUI_SIMULATOR = TYRO;
 </script>
-<script type="text/javascript" src="https://iclient.test.tyro.com/iclient-with-ui-v1.js"></script>
-<script type="text/javascript">
-    // Only required because we are loading both iClient versions into the global namespace
-   // var TYROUI_TEST = TYRO;
-</script>
-<script type="text/javascript" src="https://iclient.test.tyro.com/iclient-v1.js"></script>
-<script type="text/javascript">
-    // Only required because we are loading both iClient versions into the global namespace
-   // var CUSTOMUI_TEST = TYRO;
-</script>
+
 <script type="text/javascript">
 var mid=329;
 var tid=100;
@@ -34,13 +23,10 @@ var cashout =0;
 var apiKey= '8a28a6421856b38d22f46ad0b4721ab1';
 var posProductInfo =  {posProductVendor: "Foodship", posProductName: "Foodship", posProductVersion: "1.0.0"};
 var system = [TYROUI_SIMULATOR, CUSTOMUI_SIMULATOR];
-var configurationURLs = ["https://iclientsimulator.test.tyro.com/configuration.html", "https://iclient.test.tyro.com/configuration.html"];
-var configurationUrl = configurationURLs[0];
 var simulator = true;
 var terminalStatus=0;
 function switchToSimulator() {
     system = [TYROUI_SIMULATOR, CUSTOMUI_SIMULATOR];
-    configurationUrl = configurationURLs[0];
     simulator = true;
 }
 
@@ -58,11 +44,12 @@ const sendResponse = (params)=>{
 }
 
 
-function setConfig(_apiKey,_mid,_tid)
+function setConfig(_apiKey,_mid,_tid,product_info)
 {
   apiKey = _apiKey;
   mid = _mid;
   tid = _tid;
+  posProductInfo=product_info;
   terminalStatus = 1;
 }
 
@@ -183,7 +170,7 @@ document.addEventListener('message', function(message) {
     {
         switchToSimulator();
         const {apiKey:_apiKey,mid:_mid,tid:_tid,posProductInfo:_productInfo} = res?.data;
-          setConfig(_apiKey,_mid,_tid);
+          setConfig(_apiKey,_mid,_tid,_productInfo);
         const params = {
              action:'config-set',
              data: {
